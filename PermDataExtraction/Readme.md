@@ -1,7 +1,10 @@
 # Usage : 
 
 Copy the target folder over to any of the folder. You will need to copy all the files and folders.
+Run the java -jar command from the folder where you see the PermDataExtraction-final.jar file. 
 
+For example, cd D:/Target
+java -jar PermDataExtraction-final.jar
 
 
 # Command Line and Args
