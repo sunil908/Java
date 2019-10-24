@@ -20,7 +20,7 @@ import com.mashape.unirest.http.Unirest;
 public class ReutersImportUtil {
 	
 	private final static String TRI_KEY = "3crX73rRtMVLkFPUuSD9wFKyy5oIJhnV";
-	private final static int MAX_NUM_OFFSET = 10;
+	private final static int MAX_NUM_OFFSET = 50;
 	
 	private static boolean testingEnv= true;	
 	private static String srchString = "TRI";
