@@ -1,60 +1,96 @@
 # Usage : 
 
-Copy the target folder over to any of the folder. You will need to copy all the files and folders.
-Run the java -jar command from the folder where you see the PermDataExtraction-final.jar file. 
+1. Download the zip folder of the project.
+2. Make sure you can browse into the target folder. 
+3. You can run the "java -jar" command from the target folder. 
 
-For example, cd D:/Target
-java -jar PermDataExtraction-final.jar
+For example, if you are in current folder => D:/Target
+Run the cmd command below
 
+d:target/> java -jar PermDataExtraction-final.jar No STANDARD PermDownloadFile.csv
 
-# Command Line and Args
+# Command and Args definition
 
-java -jar PermDataExtraction-final.jar
-Usage is permExtractUtil [Testing?(Yes/No)] [Search String] [FileName]
+java -jar PermDataExtraction-final.jar [Testing?(Yes/No)] [Search String] [File Name]
 
-
-[Testing?(Yes/No)]: If set to 'Yes' It will only retrive 5 records.
+Arguments  -
+[Testing?(Yes/No)]: If set to 'Yes' It will only extract 5 rows. This can be used for sampling test results.
 [Search String]: Any search string for which it will extract the first 100 records. If there is missing resources it will skip.
+ Note, you can use URL encoded characters to use SPACE (%20). For example, [Search String] = JP%20MORGAN.
 [FileName]: Give desired file name of your choice. Remember that it will PostFix the search string to the filename for usability.
 
+# Additional Comment
 
+- To avoid hitting a concurrency limit with REFINITIV, on purpose there is a one second delay added into the program.
+- There is a inhirent MAX limit in REFINITIV (num) for number of entities we can retrive within a single processing call. 
+- The program first gets the search results and iterates through all the perm links within the search results. Therefore it will not be possible to extract more than 50 first search results from the utility process.
+- There is possible enchancement that can be made to extract more records but for now it will be left unchanged.
 
 # Example Usage:
 
-java -jar PermDataExtraction-final.jar Yes TRI testfile.csv
-
+java -jar PermDataExtraction-final.jar Yes STA testfile.csv
 
 # Example Output
 
-Testing:Yes
-Search String:TRI
-Filename:testfile.csv
-Size initialiazed:5
-Current: https://permid.org/1-4295861160:0
-Next: https://permid.org/1-4295903234:0
-Row added:549300561UZND4C7B569,Thomson Reuters Corp,http://sws.geonames.org/6251999/,http://sws.geonames.org/6251999/,4295861160
+$ java -jar PermDataExtraction-final.jar No JP%20MORGAN test
+args passed
+===========
+Testing:No
+Search String:JP%20MORGAN
+Filename:test
 
-done!
-Current: https://permid.org/1-4295903234:1
-Next: https://permid.org/1-4295886658:1
-Row added:6QVMFZKY1QSOOIHD7Y77,Tri-Continental Corp,http://sws.geonames.org/6252001/,http://sws.geonames.org/6252001/,4295903234
+===Download Count: 50===
+Row 1 done.
+Row 2 done.
+Row 3 done.
+Row 4 done.
+Row 5 done.
+Row 6 done.
+Row 7 done.
+Row 8 done.
+Row 9 done.
+Row 10 done.
+Row 11 done.
+Row 12 done.
+Row 13 done.
+Row 14 done.
+Row 15 done.
+Row 16 done.
+Row 17 done.
+Row 18 done.
+Row 19 done.
+Row 20 done.
+Row 21 done.
+Row 22 done.
+Row 23 done.
+Row 24 done.
+Row 25 done.
+Row 26 done.
+Row 27 done.
+Row 28 done.
+Row 29 done.
+Row 30 done.
+Row 31 done.
+Row 32 done.
+Row 33 done.
+Row 34 done.
+Row 35 done.
+Row 36 done.
+Row 37 done.
+Row 38 done.
+Row 39 done.
+Row 40 done.
+Row 41 done.
+Row 42 done.
+Row 43 done.
+Row 44 done.
+Row 45 done.
+Row 46 done.
+Row 47 done.
+Row 48 done.
+Row 49 done.
+Row 50 done.
 
-done!
-Current: https://permid.org/1-4295886658:2
-Next: https://permid.org/1-4295896425:2
-Row added:259400EX361KZAXTL620,Triton Development SA,http://sws.geonames.org/798544/,http://sws.geonames.org/798544/,4295886658
-
-done!
-Current: https://permid.org/1-4295896425:3
-Next: https://permid.org/1-5028045245:3
-Row added:213800TIXZSF4ZYI2E58,Tri-Star Resources PLC,http://sws.geonames.org/2635167/,http://sws.geonames.org/2635167/,4295896425
-
-done!
-Current: https://permid.org/1-5028045245:4
-Next: https://permid.org/1-4296066152:4
-Row added:,Tri Pointe Homes Inc,http://sws.geonames.org/6252001/,http://sws.geonames.org/6252001/,5028045245
-
-done!
 
 # Output File
 
@@ -76,4 +112,3 @@ D:\git\Java\PermDataExtraction\target>dir
 24-10-2019  16:25               662 testfile.csv.TRI
                3 File(s)          7,439 bytes
                7 Dir(s)  979,930,914,816 bytes free
-
