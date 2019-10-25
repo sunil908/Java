@@ -22,8 +22,8 @@ public class ReutersImportUtil {
 	private final static String TRI_KEY = "3crX73rRtMVLkFPUuSD9wFKyy5oIJhnV";
 	private final static int MAX_NUM_OFFSET = 50;
 	
-	private static boolean testingEnv= true;	
-	private static String srchString = "TRI";
+	private static boolean testingEnv= false;	
+	private static String srchString = "JP%20MORGAN";
 	private static String fileName = "C:\\Users\\sunil\\Downloads\\PermIDExtract.csv";
 
 	public static JSONObject parseJSONFile(String filename) throws JSONException, IOException {
@@ -58,6 +58,7 @@ public class ReutersImportUtil {
 		    }
 		catch(Exception e){
 			System.out.print(e.toString());
+			System.out.print("Caught an exception here....");
 			jsonObject = null;
 		}
 		return jsonObject;
@@ -110,6 +111,8 @@ public class ReutersImportUtil {
 		srchString = args[1].toString();
 		fileName = args[2].toString()+"."+srchString;
 		
+		System.out.println("args passed");
+		System.out.println("===========");
 		System.out.println("Testing:"+ args[0].toString());
 		System.out.println("Search String:"+ args[1].toString());
 		System.out.println("Filename:"+ args[2].toString());
@@ -200,13 +203,24 @@ public class ReutersImportUtil {
 							sbr.append(jsonCurrentObj.get("tr-org:hasLEI"));
 						}
 						sbr.append(",");
-						sbr.append(jsonCurrentObj.get("vcard:organization-name"));
+						if(jsonCurrentObj.has("vcard:organization-name")) {
+							sbr.append(jsonCurrentObj.get("vcard:organization-name"));
+						}
 						sbr.append(",");
-						sbr.append(jsonCurrentObj.get("isIncorporatedIn"));
+						if(jsonCurrentObj.has("isIncorporatedIn")) {
+							sbr.append(jsonCurrentObj.get("isIncorporatedIn"));
+						}
 						sbr.append(",");
-						sbr.append(jsonCurrentObj.get("isDomiciledIn"));
+						if(jsonCurrentObj.has("isIncorporatedIn")) {
+							sbr.append(jsonCurrentObj.get("isIncorporatedIn"));
+						}
+						if(jsonCurrentObj.has("isDomiciledIn")) {
+							sbr.append(jsonCurrentObj.get("isDomiciledIn"));
+						}
 						sbr.append(",");
-						sbr.append(jsonCurrentObj.get("tr-common:hasPermId"));
+						if(jsonCurrentObj.has("tr-common:hasPermId")) {
+							sbr.append(jsonCurrentObj.get("tr-common:hasPermId"));
+						}
 						sbr.append('\n');
 						//System.out.println(response.getBody());
 						System.out.println("Row added:" + sbr.toString());
