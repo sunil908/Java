@@ -30,9 +30,10 @@ Arguments  -
 
 java -jar PermDataExtraction-final.jar Yes STA testfile.csv
 
-# Example Output
+# Example Output:
 
 $ java -jar PermDataExtraction-final.jar No JP%20MORGAN test
+
 args passed
 ===========
 Testing:No
