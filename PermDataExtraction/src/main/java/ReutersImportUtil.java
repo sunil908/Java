@@ -6,7 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.concurrent.TimeUnit;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,9 +21,10 @@ public class ReutersImportUtil {
 	
 	private final static String TRI_KEY = "3crX73rRtMVLkFPUuSD9wFKyy5oIJhnV";
 	private final static int MAX_NUM_OFFSET = 50;
+	private final static int CALL_DELAY_SEC = 1;
 	
 	private static boolean testingEnv= false;	
-	private static String srchString = "JP%20MORGAN";
+	private static String srchString = "STAND";
 	private static String fileName = "C:\\Users\\sunil\\Downloads\\PermIDExtract.csv";
 
 	public static JSONObject parseJSONFile(String filename) throws JSONException, IOException {
@@ -81,17 +82,23 @@ public class ReutersImportUtil {
 		return PermList;
 	}
 	
-	
+	public static boolean isJSONValid(String testJson) {
+	    try {
+	        new JSONObject(testJson);
+	    } catch (JSONException ex) {
+	        // edited, to include @Arthur's comment
+	        // e.g. in case JSONArray is valid as well...
+	        try {
+	            new JSONArray(testJson);
+	        } catch (JSONException ex1) {
+	            return false;
+	        }
+	    }
+	    return true;
+	}
 
 	public static void main(String[] args) throws Exception{
 		// TODO Auto-generated method stub
-		
-		List<String> permList = new ArrayList<String>();
-		List<JSONObject> jsonPermData = new ArrayList<JSONObject>();
-		JSONObject jsonObject = HttpReutersRequest(srchString);
-		permList = extractPermID(jsonObject);
-		int sizeExtraction=5;
-
 		
 		if(args.length != 3) {
 			System.out.print("Usage is permExtractUtil [Testing?(Yes/No)] [Search String] [FileName]");
@@ -103,20 +110,31 @@ public class ReutersImportUtil {
 			System.exit(0);
 		}
 		
-		if(args[1].toString().compareToIgnoreCase("No")!=0 && !testingEnv) {
-			sizeExtraction=permList.size(); 
+		if(args[1].toString().compareToIgnoreCase("Yes")==0 || testingEnv) {
+			testingEnv = true;
 		}
-		
-		
-		srchString = args[1].toString();
-		fileName = args[2].toString()+"."+srchString;
-		
+
+
 		System.out.println("args passed");
 		System.out.println("===========");
 		System.out.println("Testing:"+ args[0].toString());
 		System.out.println("Search String:"+ args[1].toString());
 		System.out.println("Filename:"+ args[2].toString());
-		System.out.println("Size initialiazed:"+sizeExtraction);
+		
+
+		int sizeExtraction=5;
+		srchString = args[1].toString();
+		fileName = args[2].toString()+"."+srchString;
+		List<String> permList = new ArrayList<String>();
+		List<JSONObject> jsonPermData = new ArrayList<JSONObject>();
+		JSONObject jsonObject = HttpReutersRequest(srchString);
+		permList = extractPermID(jsonObject);
+		
+		if (!testingEnv) {
+			sizeExtraction=permList.size();
+			System.out.println("\n===Download Count: "+sizeExtraction+"===");
+		}
+
 		
 		//System.out.println(""+permList.toString());
 		//System.out.print(permList.get(0));
@@ -154,7 +172,11 @@ public class ReutersImportUtil {
 			
 		    //https://permid.org/1-4295861160?format=json-ld&?access-token=3crX73rRtMVLkFPUuSD9wFKyy5oIJhnV&
 			//permList.size()
+			JSONObject jsonCurrentObj = null;
+			String responseBody = null;
+			
 			for(int i=0; i<sizeExtraction; i++) {
+					jsonCurrentObj = null;
 					String postURI = permList.get(i);
 					String NextpostURI="";
 					if((i+1)<permList.size()) {
@@ -174,16 +196,25 @@ public class ReutersImportUtil {
 							  .header("Connection", "keep-alive")
 							  .header("cache-control", "no-cache")
 							  .asString();
+						
+						responseBody = response.getBody();
+						
 						if (response.getBody().isEmpty()) {
 								System.out.println("skipped");
 								continue;
 							}
-							
-						JSONObject jsonCurrentObj =new JSONObject(response.getBody());
+						
+						if (!isJSONValid(responseBody)) {
+							System.err.println("\nError: Response received-"+responseBody);
+							throw new RuntimeException();
+						}
+						else {
+							jsonCurrentObj =new JSONObject(responseBody);
+						}
 						
 						jsonPermData.add(jsonCurrentObj);
-						System.out.println("Current: "+postURI+":"+i);
-						System.out.println("Next: "+NextpostURI+":"+i);
+						//System.out.println("Current: "+postURI+paramValue+":"+i);
+						//System.out.println("Next: "+NextpostURI+paramValue+":"+i);
 						
 						//legalEntityIdentifier   : "tr-org:hasLEI" 
 						//legalEntityName    : "vcard:organization-name"
@@ -195,41 +226,50 @@ public class ReutersImportUtil {
 						//"InternalID"   
 						//"ShortName"  : "vcard:organization-name"   
 						//"PermID"	: "tr-common:hasPermId"
-
 						//Build the row string
 						 
 						StringBuilder sbr = new StringBuilder();
+						
+						
 						if(jsonCurrentObj.has("tr-org:hasLEI")) {
 							sbr.append(jsonCurrentObj.get("tr-org:hasLEI"));
 						}
+						
 						sbr.append(",");
 						if(jsonCurrentObj.has("vcard:organization-name")) {
 							sbr.append(jsonCurrentObj.get("vcard:organization-name"));
 						}
+						
 						sbr.append(",");
 						if(jsonCurrentObj.has("isIncorporatedIn")) {
 							sbr.append(jsonCurrentObj.get("isIncorporatedIn"));
 						}
+						
 						sbr.append(",");
-						if(jsonCurrentObj.has("isIncorporatedIn")) {
-							sbr.append(jsonCurrentObj.get("isIncorporatedIn"));
-						}
 						if(jsonCurrentObj.has("isDomiciledIn")) {
 							sbr.append(jsonCurrentObj.get("isDomiciledIn"));
 						}
 						sbr.append(",");
+						
+						if(jsonCurrentObj.has("vcard:organization-name")) {
+							sbr.append(jsonCurrentObj.get("vcard:organization-name"));
+						}
+						sbr.append(",");
 						if(jsonCurrentObj.has("tr-common:hasPermId")) {
 							sbr.append(jsonCurrentObj.get("tr-common:hasPermId"));
+							//System.out.println(jsonCurrentObj.has("tr-common:hasPermId"));
 						}
+						
 						sbr.append('\n');
 						//System.out.println(response.getBody());
-						System.out.println("Row added:" + sbr.toString());
 						permWriter.write(sbr.toString());
-						System.out.println("done!");
+						System.out.println("Row " + (i+1) + " done. ");
+						TimeUnit.SECONDS.sleep(CALL_DELAY_SEC);
 				    }
 				 }
 				catch(Exception e){
 					System.out.print(e.toString());
+					
 				}
 				finally {
 					permWriter.close();
