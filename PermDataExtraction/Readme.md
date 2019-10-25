@@ -36,11 +36,11 @@ $ java -jar PermDataExtraction-final.jar No JP%20MORGAN test
 
 args passed
 ===========
-Testing:No
+Testing: No
 
-Search String:JP%20MORGAN
+Search String: JP%20MORGAN
 
-Filename:test
+Filename: test
 
 
 ===Download Count: 50===
@@ -98,11 +98,11 @@ Row 50 done.
 
 # Output File
 
-D:\git\Java\PermDataExtraction\target>dir
+D:\target>dir
  Volume in drive D is DATA
- Volume Serial Number is B40D-4670
+ Volume Serial Number is XXXX-4XXX
 
- Directory of D:\git\Java\PermDataExtraction\target
+ Directory of D:\target
 
 24-10-2019  16:25    <DIR>          .
 24-10-2019  16:25    <DIR>          ..
@@ -113,6 +113,6 @@ D:\git\Java\PermDataExtraction\target>dir
 24-10-2019  16:20             6,115 PermDataExtraction-final.jar
 24-10-2019  15:42    <DIR>          test-classes
 24-10-2019  16:04               662 test1.csv.TIR
-24-10-2019  16:25               662 testfile.csv.TRI
+24-10-2019  16:25               662 testfile.csv.JP%20MORGON
                3 File(s)          7,439 bytes
                7 Dir(s)  979,930,914,816 bytes free
